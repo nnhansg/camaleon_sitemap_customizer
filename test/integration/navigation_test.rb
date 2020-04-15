@@ -6,9 +6,13 @@ class NavigationTest < ActionDispatch::IntegrationTest
   CONTROLLER = CamaleonCms::AdminController
 
   def setup
+    # For reasons as yet unknown, Rails 6 deletes the data in the test DB when
+    # starting the test suite. The following lines create a fresh copy of the DB
+    # with the necessary data as a workaround.
     archive_db_path = Rails.root.join("db", "test_copy.sqlite3")
     test_db_path = Rails.root.join("db", "test.sqlite3")
     FileUtils.cp archive_db_path, test_db_path
+
     admin_sign_in
     get "http://localhost:3000/admin/plugins/toggle?id=camaleon_sitemap_customizer&status=false"
     assert_equal 'Plugin "Camaleon Sitemap Customizer" was activated.', flash[:notice]

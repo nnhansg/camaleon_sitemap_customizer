@@ -8,6 +8,15 @@ class SystemTest < ActionDispatch::IntegrationTest
   include Capybara::DSL
   include Capybara::Minitest::Assertions
 
+  def setup
+    # For reasons as yet unknown, Rails 6 deletes the data in the test DB when
+    # starting the test suite. The following lines create a fresh copy of the DB
+    # with the necessary data as a workaround.
+    archive_db_path = Rails.root.join("db", "test_copy.sqlite3")
+    test_db_path = Rails.root.join("db", "test.sqlite3")
+    FileUtils.cp archive_db_path, test_db_path
+  end
+
   def teardown
     Capybara.reset_sessions!
     Capybara.use_default_driver
